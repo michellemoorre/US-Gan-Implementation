@@ -17,10 +17,10 @@ def train_batch(model, X_batch, y_batch, gan_optimizer, loss_function):
     
     return discriminator_loss.cpu().item()+generator_loss.cpu().item()
 
-def train_epoch(train_generator, model, gan_optimizer, loss_function):
+def train_epoch(data_generator, model, gan_optimizer, loss_function):
     epoch_loss = 0
     epoch_len = 0
-    for X_batch, y_batch in train_generator:
+    for X_batch, y_batch in data_generator:
         batch_len = len(X_batch)
         batch_loss = train_batch(model, X_batch, y_batch, optimizer, loss_function)
         epoch_loss += batch_loss*batch_len
@@ -34,7 +34,7 @@ def trainer(count_of_epoch,
             model, 
             loss_function,
             optimizer,
-            lr = 0.001):
+            lr = 0.0001):
     
     opt_generator = optimizer(model.generator.parameters(), lr=lr*10, betas=(0.5, 0.999))
     opt_discriminator = optimizer(model.discriminator.parameters(), lr=lr, betas=(0.5, 0.999))
@@ -45,7 +45,7 @@ def trainer(count_of_epoch,
         batch_generator = tqdm()
         
         epoch_loss = train_epoch(
-            train_generator=batch_generator, 
+            data_generator=batch_generator, 
             model=model, 
             loss_function=loss_function, 
             gan_optimizer=(opt_generator, opt_discriminator))
